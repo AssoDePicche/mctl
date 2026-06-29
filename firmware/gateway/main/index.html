@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>App</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Arial, sans-serif;
+            background-color: #121212;
+            color: #ffffff;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+        }
+        .card {
+            background-color: #1e1e1e;
+            padding: 30px;
+            border-radius: 16px;
+            box-shadow: 0 8px 24px rgba(0,0,0,0.5);
+            text-align: center;
+            width: 300px;
+        }
+        h1 {
+            font-size: 1.5rem;
+            color: #bb86fc;
+            margin-bottom: 20px;
+        }
+        .display {
+            font-size: 3.5rem;
+            font-weight: bold;
+            margin: 20px 0;
+            color: #03dac6;
+        }
+        .btn-container {
+            display: flex;
+            justify-content: space-between;
+            gap: 15px;
+        }
+        button {
+            flex: 1;
+            padding: 15px;
+            font-size: 1.5rem;
+            border: none;
+            border-radius: 8px;
+            background-color: #332940;
+            color: #ffffff;
+            cursor: pointer;
+            transition: background 0.2s, transform 0.1s;
+        }
+        button:active {
+            transform: scale(0.95);
+            background-color: #bb86fc;
+            color: #000000;
+        }
+    </style>
+    <script>
+        function changePower(action) {
+            fetch('/api/led?action=' + action)
+                .then(r => r.json())
+                .then(d => { document.getElementById('power').innerText = d.power + '%'; });
+        }
+    </script>
+</head>
+<body>
+    <div class="card">
+        <h1>LED</h1>
+        <div class="display" id="power">50%</div>
+        <div class="btn-container">
+            <button onclick="changePower('decrease')">-</button>
+            <button onclick="changePower('increase')">+</button>
+        </div>
+    </div>
+</body>
+</html>
