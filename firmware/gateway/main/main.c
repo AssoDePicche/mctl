@@ -36,6 +36,8 @@ void app_main(void) {
 
   ESP_ERROR_CHECK(esp_event_loop_create_default());
 
+  esp_netif_create_default_wifi_ap();
+
   ESP_ERROR_CHECK(esp_event_handler_register(WIFI_EVENT, ESP_EVENT_ANY_ID, &AccessPointEvent, NULL));
 
   AccessPointInit();
@@ -44,6 +46,10 @@ void app_main(void) {
 }
 
 void AccessPointInit(void) {
+    wifi_init_config_t cfg = WIFI_INIT_CONFIG_DEFAULT();
+
+    ESP_ERROR_CHECK(esp_wifi_init(&cfg));
+
     wifi_config_t  configuration =  (wifi_config_t){
         .ap  =  {
             .authmode = WIFI_AUTH_OPEN,
