@@ -26,18 +26,33 @@
         h1 {
             font-size: 1.5rem;
             color: #bb86fc;
-            margin-bottom: 20px;
+            margin-bottom: 5px;
+        }
+        .display-container {
+            margin: 20px 0;
+        }
+        .display-label {
+            font-size: 0.85rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            color: #aaaaaa;
         }
         .display {
             font-size: 3.5rem;
             font-weight: bold;
-            margin: 20px 0;
             color: #03dac6;
+            margin-bottom: 15px;
+        }
+        .sub-display {
+            font-size: 1.8rem;
+            font-weight: bold;
+            color: #ffb74d;
         }
         .btn-container {
             display: flex;
             justify-content: space-between;
             gap: 15px;
+            margin-top: 20px;
         }
         button {
             flex: 1;
@@ -55,19 +70,56 @@
             background-color: #bb86fc;
             color: #000000;
         }
+        hr {
+            border: 0;
+            height: 1px;
+            background: #333;
+            margin: 15px 0;
+        }
     </style>
     <script>
+        function updateUI(data) {
+            if (data.power !== undefined) {
+                document.getElementById('power').innerText = data.power + '%';
+            }
+            if (data.potentiometer !== undefined) {
+                document.getElementById('pot').innerText = data.potentiometer + '%';
+            }
+        }
+
         function changePower(action) {
             fetch('/api/led?action=' + action)
                 .then(r => r.json())
-                .then(d => { document.getElementById('power').innerText = d.power + '%'; });
+                .then(d => updateUI(d))
+                .catch(e => console.error("Error updating power:", e));
         }
+
+        function pollStatus() {
+            fetch('/api/led')
+                .then(r => r.json())
+                .then(d => updateUI(d))
+                .catch(e => console.error("Polling error:", e));
+        }
+
+        document.addEventListener("DOMContentLoaded", () => {
+            setInterval(pollStatus, 400);
+        });
     </script>
 </head>
 <body>
     <div class="card">
-        <h1>LED</h1>
-        <div class="display" id="power">50%</div>
+        <h1>LED CONTROL</h1>
+        
+        <div class="display-container">
+            <div class="display-label">LED Power</div>
+            <div class="display" id="power">50%</div>
+            
+            <hr>
+            
+            <div class="display-label">Potentiometer</div>
+            <div class="sub-display" id="pot">0%</div>
+        </div>
+
         <div class="btn-container">
             <button onclick="changePower('decrease')">-</button>
             <button onclick="changePower('increase')">+</button>
