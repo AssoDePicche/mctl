@@ -20,11 +20,20 @@
 #define SCLK_PIN 18
 #define CS_PIN 5
 
+#define KNOB_OFFSET 2
+
+typedef struct {
+    uint8_t led_power;
+    uint8_t potentiometer_value;
+} spi_packet_t;
+
 const char *TAG = "GATEWAY"; 
 
 static spi_device_handle_t spiDevice;
 
 static int led_power = 50;
+
+static int remote_potentiometer_value = 0;
 
 extern const uint8_t index_html_start[] asm("_binary_index_html_start");
 
@@ -51,6 +60,8 @@ void DnsServerInit(void);
 void HttpServerInit(void);
 
 void SpiInit(void);
+
+void SpiSync(void);
 
 void app_main(void) {
   esp_err_t nvsInit = nvs_flash_init();
@@ -158,6 +169,34 @@ void SpiInit(void) {
     ESP_LOGI(TAG, "SPI MASTER INIT FINISHED");
 }
 
+void SpiSync(void) {
+   spi_packet_t tx_data = {
+        .led_power = (uint8_t)led_power,
+        .potentiometer_value = 0,
+    };
+    spi_packet_t rx_data = {0};
+
+    spi_transaction_t t = {
+        .length = sizeof(spi_packet_t) * 8, 
+        .tx_buffer = &tx_data,
+        .rx_buffer = &rx_data,
+    };
+
+    esp_err_t ret = spi_device_transmit(spiDevice, &t);
+
+    if (ret == ESP_OK) {
+        int diff = (int)rx_data.potentiometer_value - remote_potentiometer_value;
+
+        if (diff > KNOB_OFFSET || diff < -KNOB_OFFSET) {
+            led_power = rx_data.potentiometer_value; 
+        }
+    
+        remote_potentiometer_value = rx_data.potentiometer_value; 
+    } else {
+        ESP_LOGE(TAG, "SPI transmission failed: %s", esp_err_to_name(ret));
+    } 
+}
+
 void dns_server_task(void *pvParameters) {
     uint8_t rx_buffer[128];
 
@@ -256,15 +295,15 @@ esp_err_t led_api_handler(httpd_req_t *req) {
 
             if (strcmp(action, "decrease") == 0 && led_power > 0) led_power -= 10;
 
-            // TODO: send data to slave
-            
             ESP_LOGI(TAG, "Power changed to: %d%%", led_power);
         }
     }
 
-    char json[32];
+    SpiSync();
 
-    snprintf(json, sizeof(json), "{\"power\": %d}", led_power);
+    char json[64];
+
+    snprintf(json, sizeof(json), "{\"power\": %d, \"potentiometer\": %d}", led_power, remote_potentiometer_value);
 
     httpd_resp_set_type(req, "application/json");
 
