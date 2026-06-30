@@ -1,6 +1,11 @@
+# MCTL
+
+Interfacing via SPI an ESP32 running a WebServer with an STM32 to control a LED power
+
 ## Table of Contents
 
 - [BOM](#bill-of-materials)
+- [Pinout](#pinout)
 
 ## Bill of Materials
 
@@ -10,7 +15,9 @@
 | U2 | ESP32-DEV-KIT-V1 | MCU Xtensa 240MHz | 1 |
 | D1 | NFP1315-51A | 0.96inch OLED Display | 1 |
 
-## ESP32-DEV-KIT-V1 Pinout
+## Pinout
+
+### ESP32-DEV-KIT-V1 Pinout
 
 | Pin | Description |
 | :--- | :--- |
