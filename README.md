@@ -15,6 +15,9 @@ Interfacing via SPI an ESP32 running a WebServer with an STM32 to control a LED 
 | U1 | STM32F103C8T6 | MCU ARM Cortex-M3 72MHz | 1 |
 | U2 | ESP32-DEV-KIT-V1 | MCU Xtensa 240MHz | 1 |
 | D1 | NFP1315-51A | 0.96inch OLED Display | 1 |
+| R1 | CFR-25JB-52-330 | 330/5% | 1 |
+| RV1 | PTH902-030F-103B2 | POT 10K/5% | 1 |
+| D1 | TLDR5800 | LED PTH 5mm Round Red Diffused | 1 |
 
 ## Libraries
 
