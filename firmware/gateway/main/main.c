@@ -15,7 +15,7 @@
 #define DNS_PORT 53
 #define MIN_DNS_QUERY_LEN 12
 
-#define MISO_PIN 10
+#define MISO_PIN 19
 #define MOSI_PIN 23
 #define SCLK_PIN 18
 #define CS_PIN 5
