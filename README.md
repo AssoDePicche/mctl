@@ -5,6 +5,7 @@ Interfacing via SPI an ESP32 running a WebServer with an STM32 to control a LED 
 ## Table of Contents
 
 - [BOM](#bill-of-materials)
+- [Libraries](#libraries)
 - [Pinout](#pinout)
 
 ## Bill of Materials
@@ -21,7 +22,25 @@ Interfacing via SPI an ESP32 running a WebServer with an STM32 to control a LED 
 
 | Pin | Description |
 | :--- | :--- |
-| GPIO_10 | SPI MISO |
-| GPIO_23 | SPI MOSI |
-| GPIO_18 | SPI SCKL |
 | GPIO_5 | SPI CS |
+| GPIO_18 | SPI SCKL |
+| GPIO_19 | SPI MISO |
+| GPIO_23 | SPI MOSI |
+
+
+### STM32F103C8T6
+
+| Pin | Description |
+| :--- | :--- |
+| PA0 | ADC_CH0 |
+| PA4 | SPI CS |
+| PA5 | SPI SCKL |
+| PA6 | SPI MISO |
+| PA7 | SPI MOSI |
+| PA8 | TIM1_CH1 |
+| PB6 | I2C SCL |
+| PB7 | I2C SDA |
+
+## Libraries
+
+- [ssd1306](https://github.com/afiskon/stm32-ssd1306)
