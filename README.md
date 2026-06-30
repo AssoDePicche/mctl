@@ -16,6 +16,10 @@ Interfacing via SPI an ESP32 running a WebServer with an STM32 to control a LED 
 | U2 | ESP32-DEV-KIT-V1 | MCU Xtensa 240MHz | 1 |
 | D1 | NFP1315-51A | 0.96inch OLED Display | 1 |
 
+## Libraries
+
+- [olikraus/u8g2](https://github.com/olikraus/u8g2)
+
 ## Pinout
 
 ### ESP32-DEV-KIT-V1 Pinout
@@ -40,7 +44,3 @@ Interfacing via SPI an ESP32 running a WebServer with an STM32 to control a LED 
 | PA8 | TIM1_CH1 |
 | PB6 | I2C SCL |
 | PB7 | I2C SDA |
-
-## Libraries
-
-- [ssd1306](https://github.com/afiskon/stm32-ssd1306)
