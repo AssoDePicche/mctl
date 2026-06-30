@@ -9,3 +9,12 @@
 | U1 | STM32F103C8T6 | MCU ARM Cortex-M3 72MHz | 1 |
 | U2 | ESP32-DEV-KIT-V1 | MCU Xtensa 240MHz | 1 |
 | D1 | NFP1315-51A | 0.96inch OLED Display | 1 |
+
+## ESP32-DEV-KIT-V1 Pinout
+
+| Pin | Description |
+| :--- | :--- |
+| GPIO_10 | SPI MISO |
+| GPIO_23 | SPI MOSI |
+| GPIO_18 | SPI SCKL |
+| GPIO_5 | SPI CS |
