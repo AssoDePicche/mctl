@@ -25,7 +25,10 @@
 
 /* Private typedef -----------------------------------------------------------*/
 /* USER CODE BEGIN PTD */
-
+typedef struct {
+	uint8_t led_power;
+	uint8_t potentiometer_value;
+} spi_packet_t;
 /* USER CODE END PTD */
 
 /* Private define ------------------------------------------------------------*/
@@ -43,12 +46,19 @@ ADC_HandleTypeDef hadc1;
 
 I2C_HandleTypeDef hi2c1;
 
+SPI_HandleTypeDef hspi1;
+
 TIM_HandleTypeDef htim2;
 
 /* USER CODE BEGIN PV */
 volatile uint32_t adc_value = 0;
 const uint32_t MAX_ADC_REAL_VALUE = 4015;
 volatile uint8_t update_system = 0;
+spi_packet_t spi_tx_data = { 0 };
+spi_packet_t spi_rx_data = { 0 };
+uint8_t previous_adc_led_power = 0;
+uint8_t previous_rx_led_power = 0;
+uint8_t current_led_power=0;
 /* USER CODE END PV */
 
 /* Private function prototypes -----------------------------------------------*/
@@ -57,6 +67,7 @@ static void MX_GPIO_Init(void);
 static void MX_ADC1_Init(void);
 static void MX_TIM2_Init(void);
 static void MX_I2C1_Init(void);
+static void MX_SPI1_Init(void);
 /* USER CODE BEGIN PFP */
 
 /* USER CODE END PFP */
@@ -96,6 +107,7 @@ int main(void) {
 	MX_ADC1_Init();
 	MX_TIM2_Init();
 	MX_I2C1_Init();
+	MX_SPI1_Init();
 	/* USER CODE BEGIN 2 */
 	HAL_TIM_PWM_Start(&htim2, TIM_CHANNEL_2);
 
@@ -117,19 +129,45 @@ int main(void) {
 	/* USER CODE BEGIN WHILE */
 	while (1) {
 		/* USER CODE END WHILE */
-		if (update_system == 1) {
-			__HAL_TIM_SET_COMPARE(&htim2, TIM_CHANNEL_2, adc_value);
-			const uint8_t power = (adc_value * 100) / MAX_ADC_REAL_VALUE;
-			char buffer[20] = {0};
-			sprintf(buffer, "Power:% 4d%%   ", power);
-			ssd1306_SetCursor(0, 0);
-			ssd1306_WriteString(buffer, Font_11x18, White);
-			ssd1306_UpdateScreen();
-			update_system = 0;
-			HAL_Delay(100);
-			HAL_ADC_Start_IT(&hadc1);
-		}
+
 		/* USER CODE BEGIN 3 */
+		if (update_system == 1) {
+		    const uint8_t current_adc_led_power = (adc_value * 100) / MAX_ADC_REAL_VALUE;
+
+		    spi_tx_data.potentiometer_value = current_adc_led_power;
+
+		    HAL_SPI_TransmitReceive(&hspi1, (uint8_t*)&spi_tx_data, (uint8_t*)&spi_rx_data, sizeof(spi_packet_t), HAL_MAX_DELAY);
+
+		    if (spi_rx_data.led_power != previous_rx_led_power) {
+		    	current_led_power = spi_rx_data.led_power;
+		    	previous_rx_led_power = spi_rx_data.led_power;
+		    	previous_adc_led_power = current_adc_led_power;
+ 		    } else if (abs((int)current_adc_led_power - (int)previous_adc_led_power) > 1) {
+ 		    	current_led_power =  current_adc_led_power;
+ 		    	previous_adc_led_power = current_adc_led_power;
+ 		    	previous_rx_led_power = spi_rx_data.led_power;
+ 		    }
+
+		    const uint32_t PWM = (current_led_power * MAX_ADC_REAL_VALUE) / 100;
+
+		    __HAL_TIM_SET_COMPARE(&htim2, TIM_CHANNEL_2, PWM);
+
+		    char buffer[20] = {0};
+
+		    sprintf(buffer, "Power:% 4d%% ", current_led_power);
+
+		    ssd1306_SetCursor(0, 0);
+
+		    ssd1306_WriteString(buffer, Font_11x18, White);
+
+		    ssd1306_UpdateScreen();
+
+		    update_system = 0;
+
+		    HAL_Delay(50);
+
+		    HAL_ADC_Start_IT(&hadc1);
+		}
 	}
 	/* USER CODE END 3 */
 }
@@ -253,6 +291,41 @@ static void MX_I2C1_Init(void) {
 }
 
 /**
+ * @brief SPI1 Initialization Function
+ * @param None
+ * @retval None
+ */
+static void MX_SPI1_Init(void) {
+
+	/* USER CODE BEGIN SPI1_Init 0 */
+
+	/* USER CODE END SPI1_Init 0 */
+
+	/* USER CODE BEGIN SPI1_Init 1 */
+
+	/* USER CODE END SPI1_Init 1 */
+	/* SPI1 parameter configuration*/
+	hspi1.Instance = SPI1;
+	hspi1.Init.Mode = SPI_MODE_SLAVE;
+	hspi1.Init.Direction = SPI_DIRECTION_2LINES;
+	hspi1.Init.DataSize = SPI_DATASIZE_8BIT;
+	hspi1.Init.CLKPolarity = SPI_POLARITY_LOW;
+	hspi1.Init.CLKPhase = SPI_PHASE_1EDGE;
+	hspi1.Init.NSS = SPI_NSS_HARD_INPUT;
+	hspi1.Init.FirstBit = SPI_FIRSTBIT_MSB;
+	hspi1.Init.TIMode = SPI_TIMODE_DISABLE;
+	hspi1.Init.CRCCalculation = SPI_CRCCALCULATION_DISABLE;
+	hspi1.Init.CRCPolynomial = 10;
+	if (HAL_SPI_Init(&hspi1) != HAL_OK) {
+		Error_Handler();
+	}
+	/* USER CODE BEGIN SPI1_Init 2 */
+
+	/* USER CODE END SPI1_Init 2 */
+
+}
+
+/**
  * @brief TIM2 Initialization Function
  * @param None
  * @retval None
@@ -337,7 +410,7 @@ void HAL_ADC_ConvCpltCallback(ADC_HandleTypeDef *hadc) {
 		adc_value = HAL_ADC_GetValue(&hadc1);
 
 		if (adc_value > MAX_ADC_REAL_VALUE) {
-		    adc_value = MAX_ADC_REAL_VALUE;
+			adc_value = MAX_ADC_REAL_VALUE;
 		}
 
 		update_system = 1;
