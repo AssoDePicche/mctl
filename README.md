@@ -21,7 +21,7 @@ Interfacing via SPI an ESP32 running a WebServer with an STM32 to control a LED 
 
 ## Libraries
 
-- [olikraus/u8g2](https://github.com/olikraus/u8g2)
+- [stm32-ssd1306](https://github.com/afiskon/stm32-ssd1306)
 
 ## Pinout
 
@@ -47,8 +47,12 @@ Interfacing via SPI an ESP32 running a WebServer with an STM32 to control a LED 
 | PA7 | SPI1_MOSI |
 | PB6 | I2C1_SCL |
 | PB7 | I2C1_SDA |
+| PC13 | GPIO Output
 
+- I2C1 Mode: I2C
 - RCC HSE: Crystal/Ceramic Resonator
+- SPI1 Mode: Full-Duplex Slave
+- Hardware NSS Signal: Hardware NSS Input Signal
 - PLLMul: x9 (72MHz)
 - Prescaler: 0
 - Counter Period: 4095
