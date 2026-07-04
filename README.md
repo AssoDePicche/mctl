@@ -39,11 +39,16 @@ Interfacing via SPI an ESP32 running a WebServer with an STM32 to control a LED 
 
 | Pin | Description |
 | :--- | :--- |
-| PA0 | ADC_CH0 |
-| PA4 | SPI CS |
-| PA5 | SPI SCKL |
-| PA6 | SPI MISO |
-| PA7 | SPI MOSI |
-| PA8 | TIM1_CH1 |
-| PB6 | I2C SCL |
-| PB7 | I2C SDA |
+| PA0 | ADC_IN0 |
+| PA1 | TIM2_CH2 |
+| PA4 | GPIO Output (SPI CS) |
+| PA5 | SPI1_SCK |
+| PA6 | SPI1_MISO |
+| PA7 | SPI1_MOSI |
+| PB6 | I2C1_SCL |
+| PB7 | I2C1_SDA |
+
+- RCC HSE: Crystal/Ceramic Resonator
+- PLLMul: x9 (72MHz)
+- Prescaler: 0
+- Counter Period: 4095
