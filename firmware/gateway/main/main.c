@@ -63,6 +63,13 @@ void SpiInit(void);
 
 void SpiSync(void);
 
+void spi_periodic_sync_task(void *pvParameters) {
+    while (1) {
+        SpiSync();
+        vTaskDelay(pdMS_TO_TICKS(50)); 
+    }
+}
+
 void app_main(void) {
   esp_err_t nvsInit = nvs_flash_init();
 
@@ -87,6 +94,8 @@ void app_main(void) {
   HttpServerInit();
 
   DnsServerInit();
+
+  xTaskCreate(spi_periodic_sync_task, "spi_sync", 2048, NULL, 6, NULL);;
 }
 
 void AccessPointInit(void) {
