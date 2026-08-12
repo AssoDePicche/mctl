@@ -2,6 +2,8 @@
 
 Interfacing via SPI an ESP32 running a WebServer with an STM32 to control a LED power
 
+![Circuit Image](image.jpg)
+
 ## Table of Contents
 
 - [BOM](#bill-of-materials)
